@@ -132,6 +132,31 @@ All tests are kept in that file and should be maintained as updates are made to 
 ### Endpoints:
 
 // TODO: add ENDPOINTS in this section
+GET '/categories'
+
+- General: get all the Categories, with their id, and the total number of categories returned.\
+- Request Arguments: None
+- Returns: An object with keys include:
+  - categories: that contains an object of id: category_string (key:value pairs).
+  - success: boolean value (True)
+  - total_categories: total number of categories returned
+- Sample Request: `curl -X GET http://127.0.0.1:5000/categories`
+- Sample Response
+
+```json
+{
+  "categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  },
+  "success": true,
+  "total_categories": 6
+}
+```
 
 ## Deployment:
 
