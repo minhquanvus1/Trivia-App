@@ -66,6 +66,25 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(response_body['success'], False)
         self.assertEqual(response_body['message'], 'Resource Not Found')
+        
+    def test_delete_a_particular_question_then_that_question_does_not_exist_in_database_anymore(self):
+        res = self.client().delete('/questions/2')
+        response_body = json.loads(res.data)
+        deleted_question = Question.query.filter(Question.id == 2).one_or_none()
+        
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response_body['success'], True)
+        self.assertEqual(response_body['deleted_question_id'], 2)
+        self.assertIsNone(deleted_question)
+    
+    def test_delete_a_question_that_does_not_exist_in_database_then_return_404(self):
+        res = self.client().delete('/questions/1000')
+        response_body = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(response_body['success'], False)
+        self.assertEqual(response_body['message'], 'Resource Not Found')
+        
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
