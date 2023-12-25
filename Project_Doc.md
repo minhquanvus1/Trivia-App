@@ -108,8 +108,8 @@ CREATE DATABASE trivia_test;
 ```bash
 
 cd backend
-python -m test_flaskr.py
-
+python -m test_flaskr
+Or: python test_flaskr.py
 ```
 
 All tests are kept in that file and should be maintained as updates are made to app functionality.
