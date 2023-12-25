@@ -109,7 +109,26 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 405)
         self.assertEqual(response_body['success'], False)
         self.assertEqual(response_body['message'], 'Method Not Allowed')
+    
+    def test_get_questions_belong_to_a_particular_category_return_questions_of_that_category_and_their_total_number(self):
+        res = self.client().get('/categories/1/questions')
+        response_body = json.loads(res.data)
         
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response_body['success'], True)
+        self.assertTrue(response_body['questions'])
+        self.assertTrue(response_body['total_questions'])
+        self.assertGreaterEqual(response_body['total_questions'], 0)
+        self.assertTrue(response_body['current_category'])
+    
+    def test_get_questions_belong_to_the_category_that_does_not_exist_return_422(self):
+        res = self.client().get('/categories/1000/questions')
+        response_body = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 422)
+        self.assertFalse(response_body['success'])
+        self.assertEqual(response_body['message'], 'Unprocessable Entity')
+    
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
