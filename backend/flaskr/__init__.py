@@ -151,7 +151,19 @@ def create_app(test_config=None):
     categories in the left column will cause only questions of that
     category to be shown.
     """
-
+    @app.route('/categories/<int:category_id>/questions', methods=['GET'])
+    def get_questions_based_on_category(category_id):
+        category = Category.query.filter(Category.id == category_id).one_or_none()
+        if not category:
+            abort(422, description='Category with id {} does not exist'.format(category_id))
+        list_of_questions_belong_to_this_category = Question.query.order_by(Question.id).filter(Question.category == category_id).all()
+        return jsonify({
+            'success': True,
+            'questions': paginate_questions(request, list_of_questions_belong_to_this_category),
+            'total_questions': len(list_of_questions_belong_to_this_category),
+            'current_category': category_id
+            }), 200
+        
     """
     @TODO:
     Create a POST endpoint to get questions to play the quiz.
@@ -192,5 +204,13 @@ def create_app(test_config=None):
             "error": 400,
             "message": "Bad Request"
             }), 400
+    
+    @app.errorhandler(422)
+    def unprocessable_entity(error):
+        return jsonify({
+            "success": False,
+            "error": 422,
+            "message": "Unprocessable Entity"
+            }), 422
     return app
 
