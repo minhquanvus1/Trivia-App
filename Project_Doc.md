@@ -362,6 +362,25 @@ Or: GET '/questions?page={Integer}'
 }
 ```
 
+DELETE '/questions/{int:question_id}'
+
+- General: delete a particular question with a question_id\
+- Path Parameters: question_id (Integer)
+- Returns: An object with keys include:
+
+  - success: boolean value (True)
+  - deleted_question_id: id of the deleted question
+
+- Sample Request: `curl -X DELETE http://127.0.0.1:5000/questions/2`
+- Sample Response
+
+```json
+{
+  "deleted_question_id": 2,
+  "success": true
+}
+```
+
 ## Deployment:
 
 - Currently, this app is not deployed yet. But we can deploy it on Heroku or AWS Elastic Beanstalk.
