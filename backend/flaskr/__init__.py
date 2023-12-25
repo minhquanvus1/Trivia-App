@@ -8,6 +8,20 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+# define a helper function to return a list of questions on a particular page
+def paginate_questions(request, selection):
+    page = request.args.get('page', 1, type=int)
+    start_index = (page - 1) * QUESTIONS_PER_PAGE
+    end_index = start_index + QUESTIONS_PER_PAGE
+    list_of_questions_on_this_page = selection[start_index:end_index]
+    # format the list of questions on this page, so that each question is a dictionary, and can be jsonifyed. 
+    # Else, it will be a list of Question objects, which cannot be jsonifyed.
+    return [question.format() for question in list_of_questions_on_this_page]
+
+def convert_category_list_to_category_dict(list_of_categories):
+    categories_in_dictionary = {category.id : category.type for category in list_of_categories}
+    return categories_in_dictionary
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
@@ -37,7 +51,7 @@ def create_app(test_config=None):
         list_of_all_categories = Category.query.order_by(Category.id).all()
         if len(list_of_all_categories) == 0:
             abort(404)
-        categories_in_dictionary = {category.id : category.type for category in list_of_all_categories}
+        categories_in_dictionary = convert_category_list_to_category_dict(list_of_all_categories)
         return jsonify({
             'success': True,
             'categories': categories_in_dictionary,
@@ -56,7 +70,20 @@ def create_app(test_config=None):
     ten questions per page and pagination at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions.
     """
-
+    @app.route('/questions', methods=['GET'])
+    def get_paginated_questions():
+        list_of_all_questions = Question.query.order_by(Question.id).all()
+        list_of_questions_on_this_page = paginate_questions(request, list_of_all_questions)
+        if len(list_of_questions_on_this_page) == 0:
+            abort(404)
+        return jsonify({
+            'success': True,
+            'questions': list_of_questions_on_this_page,
+            'total_questions': Question.query.count(),
+            'categories': convert_category_list_to_category_dict(Category.query.order_by(Category.id).all()),
+            'current_category': None
+            }), 200
+        
     """
     @TODO:
     Create an endpoint to DELETE question using a question ID.
@@ -118,7 +145,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": False,
             "error": 404,
-            "message": "Not Found"
+            "message": "Resource Not Found"
             }), 404
 
     @app.errorhandler(405)
