@@ -46,8 +46,26 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(response_body['categories'])
         self.assertTrue(response_body['total_categories'])
         self.assertGreater(response_body['total_categories'], 0)
-        
     
+    def test_get_all_questions_return_an_object_containing_all_questions(self):
+        res = self.client().get('/questions')
+        response_body = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response_body['success'], True)
+        self.assertTrue(response_body['questions'])
+        self.assertTrue(response_body['total_questions'])
+        self.assertGreater(response_body['total_questions'], 0)
+        self.assertTrue(response_body['categories'])
+        self.assertIsNone(response_body['current_category'])
+        
+    def test_get_all_questions_return_404_if_page_number_is_out_of_range(self):
+        res = self.client().get('/questions?page=1000')
+        response_body = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(response_body['success'], False)
+        self.assertEqual(response_body['message'], 'Resource Not Found')
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
