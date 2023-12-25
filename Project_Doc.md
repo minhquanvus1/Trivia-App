@@ -381,6 +381,25 @@ DELETE '/questions/{int:question_id}'
 }
 ```
 
+POST '/questions'
+
+- General: create a new question\
+- Request Parameters: None
+- Returns: An object with keys include:
+
+  - success: boolean value (True)
+  - created_question_id: id of the created question
+
+- Sample Request: `curl -X POST http://127.0.0.1:5000/questions -H "Content-Type: application/json" -d '{"question": "What is the capital of Vietnam?", "answer": "Hanoi", "difficulty": 1, "category": 3}'`
+- Sample Response
+
+```json
+{
+  "created_question_id": 24,
+  "success": true
+}
+```
+
 ## Deployment:
 
 - Currently, this app is not deployed yet. But we can deploy it on Heroku or AWS Elastic Beanstalk.
