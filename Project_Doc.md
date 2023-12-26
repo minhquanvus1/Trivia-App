@@ -131,11 +131,11 @@ All tests are kept in that file and should be maintained as updates are made to 
 
 - Errors are returns in JSON format as follows:
 
-```
+```json
 {
-    "success": False,
-    "error": 404,
-    "message": "Resource Not Found"
+  "success": false,
+  "error": 404,
+  "message": "Resource Not Found"
 }
 ```
 
@@ -498,6 +498,47 @@ POST '/questions/search'
   You should be redirected automatically to target URL:
   <a href="/questions">/questions</a>. If not click the link.
 </p>
+```
+
+POST '/quizzes'
+
+- General: post/send the list of ids of previous questions, quiz_category, to get the current question of that category, but not in the list of previous questions\
+- Path Parameters: None
+- Returns: An object with keys include:
+
+  - success: boolean value (True)
+  - question: a JSON object which is the current question.
+
+- Sample Request 1: ` curl -X POST http://localhost:5000/quizzes -H 'Content-Type:application/json' -d '{"previous_questions" : [1], "quiz_category" : {"id" : 1, "type" : "Science"}}'`
+- Sample Response 1
+
+```json
+{
+  "question": {
+    "answer": "Alexander Fleming",
+    "category": 1,
+    "difficulty": 3,
+    "id": 21,
+    "question": "Who discovered penicillin?"
+  },
+  "success": true
+}
+```
+
+- Sample request 2: `curl -X POST http://localhost:5000/quizzes -H 'Content-Type: application/json' -d '{"previous_questions": [1], "quiz_category": {"id": 0, "type": "click"}}'`
+- Sample response 2:
+
+```json
+{
+  "question": {
+    "answer": "The Liver",
+    "category": 1,
+    "difficulty": 4,
+    "id": 20,
+    "question": "What is the heaviest organ in the human body?"
+  },
+  "success": true
+}
 ```
 
 ## Deployment:
