@@ -144,10 +144,11 @@ There are three types of errors:
 - 400: Bad Request
 - 404: Resource Not Found
 - 405: Method Not Allowed
+- 422: Unprocessable Entity
 
 ### Endpoints:
 
-// TODO: add ENDPOINTS in this section
+// TODO: add ENDPOINTS in this section<br>
 GET '/categories'
 
 - General: get all the Categories, with their id, and the total number of categories returned.\
@@ -174,10 +175,10 @@ GET '/categories'
 }
 ```
 
-GET '/questions'
+GET '/questions'<br>
 Or: GET '/questions?page={Integer}'
 
-- General: get the list of all questions, with their id, and the total number of categories returned.\
+- General: get the list of all questions, with their id, and the total number of questions returned. The returned list of questions are paginated in groups of 10.\
 - Request Arguments: ?page={Integer} (optional, default = 1)
 - Returns: An object with keys include:
 
