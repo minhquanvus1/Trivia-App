@@ -198,7 +198,50 @@ def create_app(test_config=None):
     one question at a time is displayed, the user is allowed to answer
     and shown whether they were correct or not.
     """
-
+    @app.route('/quizzes', methods=['POST'])
+    def get_current_quiz_question():
+        request_body = request.get_json()
+        if not request_body:
+            abort(400, description='Request body is empty')
+        previous_questions = request_body.get('previous_questions', [])
+        quiz_category = request_body.get('quiz_category', None)
+        
+        quiz_category_object = Category(**quiz_category)
+        id_of_quiz_category = quiz_category_object.id
+        type_of_quiz_category = quiz_category_object.type
+        # id_of_quiz_category = quiz_category.get('id', 0)
+        # type_of_quiz_category = quiz_category.get('type', 'click')
+        
+        
+        if id_of_quiz_category == 0 and type_of_quiz_category == 'click':
+            list_of_all_questions = Question.query.order_by(Question.id).all()
+            # list_of_not_asked_questions = []
+            # for question in list_of_all_questions:
+            #     if question.id not in previous_questions:
+            #         list_of_not_asked_questions.append(question)
+            list_of_not_asked_questions = [question for question in list_of_all_questions if question.id not in previous_questions]
+            if len(list_of_not_asked_questions) == 0:
+                random_question = None
+            else:
+                random_question = random.choice(list_of_not_asked_questions)
+        else:
+            list_of_questions_belong_to_this_category = Question.query.filter(Question.category == id_of_quiz_category).all()
+            list_of_not_asked_questions = [question for question in list_of_questions_belong_to_this_category if question.id not in previous_questions]
+            # use Ternary operator to assign random_question to None if list_of_not_asked_questions is empty
+            random_question = None if len(list_of_not_asked_questions) == 0 else random.choice(list_of_not_asked_questions)
+            
+            # this while loop will run forever if all questions have been asked.
+            # random_question = random.choice(list_of_all_questions)
+            # while random_question.id in previous_questions:
+            #     random_question = random.choice(list_of_all_questions)
+        
+            
+        return jsonify({
+            'success': True,
+            'question': random_question.format() if random_question else None
+            }), 200
+    
+    
     """
     @TODO:
     Create error handlers for all expected errors
