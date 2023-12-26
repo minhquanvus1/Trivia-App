@@ -85,13 +85,13 @@ class TriviaTestCase(unittest.TestCase):
     # -------Test for ['DELETE'] /questions/<int:question_id> endpoint-------
     
     def test_delete_a_particular_question_then_that_question_does_not_exist_in_database_anymore(self):
-        res = self.client().delete('/questions/12')
+        res = self.client().delete('/questions/15')
         response_body = json.loads(res.data)
-        deleted_question = Question.query.filter(Question.id == 2).one_or_none()
+        deleted_question = Question.query.filter(Question.id == 15).one_or_none()
         
         self.assertEqual(res.status_code, 200)
         self.assertEqual(response_body['success'], True)
-        self.assertEqual(response_body['deleted_question_id'], 2)
+        self.assertEqual(response_body['deleted_question_id'], 15)
         self.assertIsNone(deleted_question)
     
     def test_delete_a_question_that_does_not_exist_in_database_then_return_404(self):
