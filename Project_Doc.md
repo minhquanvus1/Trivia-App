@@ -445,6 +445,61 @@ GET '/categories/{int:category_id}/questions'
 }
 ```
 
+POST '/questions/search'
+
+- General: get questions that have a searchTerm\
+- Path Parameters: None
+- Case 1: searchTerm is NOT an empty String:
+
+  - Returns: An object with keys include:
+
+    - success: boolean value (True)
+    - questions: that contains a list of questions that have this searchTerm.
+    - total_questions: total number of questions returned
+    - current_category: id of the current category
+
+  - Sample Request: `curl -X GET http://localhost:5000/questions/search -H "Content-Type: application/json" -d '{"searchTerm": "title"}'`
+  - Sample Response
+
+  ```json
+  {
+    "current_category": null,
+    "questions": [
+      {
+        "answer": "Maya Angelou",
+        "category": 4,
+        "difficulty": 2,
+        "id": 5,
+        "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+      },
+      {
+        "answer": "Edward Scissorhands",
+        "category": 5,
+        "difficulty": 3,
+        "id": 6,
+        "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+      }
+    ],
+    "success": true,
+    "total_questions": 2
+  }
+  ```
+
+- Case 2: searchTerm is an empty String:
+  - Redirect to GET '/questions' endpoint
+- Sample Request: `curl -X GET http://localhost:5000/questions/search -H "Content-Type: application/json" -d '{"searchTerm": ""}'`
+- Sample Response:
+
+```html
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<title>Redirecting...</title>
+<h1>Redirecting...</h1>
+<p>
+  You should be redirected automatically to target URL:
+  <a href="/questions">/questions</a>. If not click the link.
+</p>
+```
+
 ## Deployment:
 
 - Currently, this app is not deployed yet. But we can deploy it on Heroku or AWS Elastic Beanstalk.
