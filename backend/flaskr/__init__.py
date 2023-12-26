@@ -206,6 +206,9 @@ def create_app(test_config=None):
         previous_questions = request_body.get('previous_questions', [])
         quiz_category = request_body.get('quiz_category', None)
         
+        if quiz_category is None:
+            abort(400, description='Quiz category is not provided')
+            
         quiz_category_object = Category(**quiz_category)
         id_of_quiz_category = quiz_category_object.id
         type_of_quiz_category = quiz_category_object.type
