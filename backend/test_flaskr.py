@@ -48,6 +48,16 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(response_body['categories'])
         self.assertTrue(response_body['total_categories'])
         self.assertGreater(response_body['total_categories'], 0)
+        
+    def test_get_all_categories_but_if_there_is_nothing_in_categories_table_then_return_404(self):
+        if Category.query.count() == 0:
+            res = self.client().get('/categories')
+            response_body = json.loads(res.data)
+            
+            self.assertEqual(res.status_code, 404)
+            self.assertEqual(response_body['success'], False)
+            self.assertEqual(response_body['message'], 'Resource Not Found')
+            
     #-------------------------------------------
     
     # -------Test for ['GET'] /questions endpoint-------
