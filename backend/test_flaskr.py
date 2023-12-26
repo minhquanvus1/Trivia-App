@@ -154,6 +154,47 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 302)
         
         self.assertIn('/questions', res.location)
+        
+    def test_get_question_to_play_quiz_given_No_previous_questions_and_quiz_category_is_Science_returns_current_question_of_category_Science(self):
+        res = self.client().post('/quizzes', json={'previous_questions': [], 'quiz_category': {'id': 1, 'type': 'Science'}})
+        response_body = json.loads(res.data)
+        if 'question' in response_body:
+            
+            # convert the question object from dictionary to Question object
+            question_object = Question(**response_body['question'])
+            category_of_current_question = Category.query.filter(Category.id == question_object.category).first().type
+            
+            self.assertEqual(res.status_code, 200)
+            self.assertTrue(response_body['question'])
+            self.assertIsInstance(response_body['question'], dict)
+            self.assertIsInstance(question_object, Question)
+            self.assertEqual(category_of_current_question, 'Science')
+            self.assertTrue(question_object.id not in [])
+    
+    def test_get_question_to_play_quiz_given_previous_questions_with_id_1_and_quiz_category_is_All_returns_current_question_not_in_previous_questions_and_of_any_category(self):
+        res = self.client().post('/quizzes', json={'previous_questions': [1,], 'quiz_category': {'id': 0, 'type': 'click'}})
+        response_body = json.loads(res.data)
+        if 'question' in response_body:
+            
+            # convert the question object from dictionary to Question object
+            question_object = Question(**response_body['question'])
+            category_of_current_question = Category.query.filter(Category.id == question_object.category).first().type
+            
+            self.assertEqual(res.status_code, 200)
+            self.assertTrue(response_body['question'])
+            self.assertIsInstance(response_body['question'], dict)
+            self.assertIsInstance(question_object, Question)
+            self.assertTrue(category_of_current_question in ['Science', 'Art', 'Geography', 'History', 'Entertainment', 'Sports'])
+            self.assertTrue(question_object.id != 1)
+    
+    def test_get_question_to_play_quiz_without_sending_the_request_body_returns_400(self):
+        res = self.client().post('/quizzes', json={})
+        response_body = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 400)
+        self.assertFalse(response_body['success'])
+        self.assertEqual(response_body['message'], 'Bad Request')
+        
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
