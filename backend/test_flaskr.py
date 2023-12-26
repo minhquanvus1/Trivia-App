@@ -129,6 +129,31 @@ class TriviaTestCase(unittest.TestCase):
         self.assertFalse(response_body['success'])
         self.assertEqual(response_body['message'], 'Unprocessable Entity')
     
+    def test_search_for_questions_containing_search_term_returns_questions_containing_search_term(self):
+        res = self.client().post('/questions/search', json={'searchTerm': 'title'})
+        response_body = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(response_body['questions'])
+        self.assertTrue(response_body['total_questions'])
+        self.assertGreaterEqual(response_body['total_questions'], 0)
+        self.assertIsNone(response_body['current_category'])
+    
+    def test_search_for_questions_containing_search_term_but_missing_search_term_in_the_request_returns_400(self):
+        res = self.client().post('/questions/search', json={})
+        response_body = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 400)
+        self.assertFalse(response_body['success'])
+        self.assertEqual(response_body['message'], 'Bad Request')
+    
+    def test_search_for_questions_containing_search_term_but_search_term_is_empty_string_then_redirect_to_getQuestions_page(self):
+        res = self.client().post('/questions/search', json={'searchTerm': ''})
+        
+        
+        self.assertEqual(res.status_code, 302)
+        
+        self.assertIn('/questions', res.location)
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
