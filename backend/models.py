@@ -36,12 +36,15 @@ class Question(db.Model):
     category = Column(String)
     difficulty = Column(Integer)
 
-    def __init__(self, question, answer, category, difficulty):
+    # add the default value for id as None
+    # to avoid the error: TypeError: __init__() missing 1 required positional argument: 'id' when unpacking the Question JSON object into a Question object
+    def __init__(self, question, answer, category, difficulty, id=None):
         self.question = question
         self.answer = answer
         self.category = category
         self.difficulty = difficulty
-
+        self.id = id
+        
     def insert(self):
         db.session.add(self)
         db.session.commit()
@@ -72,9 +75,10 @@ class Category(db.Model):
     id = Column(Integer, primary_key=True)
     type = Column(String)
 
-    def __init__(self, type):
+    def __init__(self, type, id=None):
         self.type = type
-
+        self.id = id
+        
     def format(self):
         return {
             'id': self.id,
