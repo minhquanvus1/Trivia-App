@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
@@ -142,7 +142,30 @@ def create_app(test_config=None):
     only question that include that string within their question.
     Try using the word "title" to start.
     """
-
+    @app.route('/questions/search', methods=['POST'])
+    def search_questions():
+        request_body = request.get_json()
+        # if searchTerm is NOT in the request body, then abort(400) BAD REQUEST
+        if not 'searchTerm' in request_body:
+            abort(400, description='Search term is not provided')
+        
+        search_term = request_body.get('searchTerm', '').strip()
+        # if search term is empty, return all questions
+        if search_term == '':
+            return redirect(url_for('get_paginated_questions'))
+        found_questions = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(search_term))).all()
+        
+        if len(found_questions) == 0:
+            # pass, because the frontend will handle the flash message
+           pass
+        
+        return jsonify({
+            'success': True,
+            'questions': paginate_questions(request, found_questions),
+            'total_questions': len(found_questions),
+            'current_category': None
+            }), 200
+        
     """
     @TODO:
     Create a GET endpoint to get questions based on category.
